@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python3
 #
 # This script generates src/pe4kin_emoji.erl from emoji.json
 # emoji.json extracted from https://web.telegram.org by smth like
@@ -63,19 +63,19 @@ def main():
     dst_file = "src/pe4kin_emoji.erl"
     when = datetime.datetime.utcnow()
     script = sys.argv[0]
-    with open(src_file) as src:
+    with open(src_file, encoding="utf-8") as src:
         emoji_map = json.load(src)
 
     name2char = ";\n".join(
-        "name_to_char('{}') -> 16#{}".format(name, char)
+        f"name_to_char('{name}') -> 16#{char}"
         for name, char in sorted(emoji_map.items(), key=lambda kv: kv[0])
     )
     char2name = ";\n".join(
-        "char_to_name(16#{}) -> '{}'".format(char, name)
+        f"char_to_name(16#{char}) -> '{name}'"
         for name, char in sorted(emoji_map.items(), key=lambda kv: int(kv[1], 16))
     )
     names = ",\n".join(
-        "'{}'".format(name)
+        f"'{name}'"
         for name in sorted(emoji_map.keys())
     )
     erl_module = TEMPLATE.format(
@@ -86,9 +86,9 @@ def main():
         char2name=char2name,
         names=names
     )
-    with open(dst_file, "w") as dst:
+    with open(dst_file, "w", encoding="utf-8") as dst:
         dst.write(erl_module)
-    print "See", dst_file
+    print("See", dst_file)
 
 
 if __name__ == '__main__':
